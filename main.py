@@ -1,119 +1,209 @@
-import requests
-#import requests
-def get_weather(city, api_key):
-    url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=metric"
-    response = requests.get(url)
-    data = response.json()
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
 
-    if response.status_code == 200:
-        temp = data['main']['temp']
-        weather = data['weather'][0]['main']
-        return temp, weather
-    else:
-        print("City not found or API error!")
-        return None, None
+// =================== GLOBALS =====================
 
-def recommend_outfit(temp, condition):
-    # Data structured by temperature range
-    outfits = {
-        "cold": [
-            {"title": "Cozy Casual", "items": ["Wool Coat", "Blue Jeans", "Sweater"]},
-            {"title": "Layered Look", "items": ["Puffer Jacket", "Thermal Leggings", "Flannel Shirt"]},
-            {"title": "Classic Winter", "items": ["Trench Coat", "Corduroy Pants", "Turtleneck"]}
-        ],
-        "moderate": [
-            {"title": "Smart Casual", "items": ["Long Sleeve Shirt", "Chinos", "Light Sweater"]},
-            {"title": "Light Layers", "items": ["Denim Jacket", "T-shirt", "Stretch Jeans"]},
-            {"title": "Relaxed Style", "items": ["Henley Shirt", "Khaki Pants", "Light Hoodie"]}
-        ],
-        "hot": [
-            {"title": "Cool & Comfy", "items": ["Cotton T-Shirt", "Shorts"]},
-            {"title": "Summer Breeze", "items": ["Sleeveless Top", "Light Joggers"]},
-            {"title": "Beach Day", "items": ["Tank Top", "Swim Shorts"]}
-        ]
+#define MAX_LEN 100
+#define NUM_OUTFITS 3
+#define NUM_ITEMS 3
+#define NUM_ACCESSORIES 5
+#define NUM_SHOES 5
+
+// ANSI color codes
+#define GREEN   "\033[1;32m"
+#define BLUE    "\033[1;34m"
+#define CYAN    "\033[1;36m"
+#define RED     "\033[1;31m"
+#define RESET   "\033[0m"
+
+typedef struct {
+    char title[MAX_LEN];
+    char items[NUM_ITEMS][MAX_LEN];
+} Outfit;
+
+// Weather structure (placeholder for real API)
+typedef struct {
+    char city[MAX_LEN];
+    float temp;
+    char condition[MAX_LEN];
+} Weather;
+
+// =================== OUTFITS =====================
+
+Outfit cold_outfits[NUM_OUTFITS] = {
+    {"Winter Warrior", {"Trench Coat", "Corduroy Pants", "Turtleneck"}},
+    {"Frosty Fashion", {"Puffer Jacket", "Thermal Leggings", "Wool Shirt"}},
+    {"Cozy Layers", {"Wool Coat", "Blue Jeans", "Sweater"}}
+};
+
+Outfit moderate_outfits[NUM_OUTFITS] = {
+    {"Smart Casual", {"Long Sleeve Shirt", "Chinos", "Light Sweater"}},
+    {"Relaxed Style", {"Henley Shirt", "Khaki Pants", "Light Hoodie"}},
+    {"Urban Mix", {"Bomber Jacket", "Joggers", "Graphic Tee"}}
+};
+
+Outfit hot_outfits[NUM_OUTFITS] = {
+    {"Cool & Comfy", {"Cotton T-Shirt", "Shorts", "Cap"}},
+    {"Beach Day", {"Tank Top", "Swim Shorts", "Flip-Flops"}},
+    {"Summer Breeze", {"Sleeveless Top", "Linen Pants", "Sun Hat"}}
+};
+
+// Accessories
+char cold_accessories[NUM_ACCESSORIES][MAX_LEN] = {
+    "Woolen Scarf", "Gloves", "Beanie", "Knitted Hat", "Earmuffs"
+};
+char moderate_accessories[NUM_ACCESSORIES][MAX_LEN] = {
+    "Cap", "Watch", "Leather Belt", "Sunglasses", "Snapback Hat"
+};
+char hot_accessories[NUM_ACCESSORIES][MAX_LEN] = {
+    "Baseball Cap", "Bandana", "Wristband", "Cooling Towel", "Bucket Hat"
+};
+
+// Shoes
+char cold_shoes[NUM_SHOES][MAX_LEN] = {
+    "Snow Boots", "Leather Boots", "Chelsea Boots", "Insulated Sneakers", "High Tops"
+};
+char moderate_shoes[NUM_SHOES][MAX_LEN] = {
+    "Sneakers", "Canvas Shoes", "Loafers", "Desert Boots", "Walking Shoes"
+};
+char hot_shoes[NUM_SHOES][MAX_LEN] = {
+    "Flip-Flops", "Sandals", "Crocs", "Sliders", "Light Sneakers"
+};
+
+// =================== UTILITIES =====================
+
+void print_banner() {
+    printf(GREEN "\n===============================\n");
+    printf(" Weather-Based Outfit Recommender\n");
+    printf("===============================\n" RESET);
+}
+
+void strip_newline(char *str) {
+    size_t len = strlen(str);
+    if (len && str[len - 1] == '\n') str[len - 1] = '\0';
+}
+
+int get_valid_choice(int max) {
+    int choice;
+    while (1) {
+        printf("Enter your choice (1-%d): ", max);
+        if (scanf("%d", &choice) == 1 && choice >= 1 && choice <= max) {
+            while (getchar() != '\n');  // flush stdin
+            return choice;
+        } else {
+            printf(RED "Invalid input. Try again.\n" RESET);
+            while (getchar() != '\n');
+        }
+    }
+}
+
+void simulate_loading(const char *msg) {
+    printf(CYAN "%s", msg);
+    for (int i = 0; i < 3; i++) {
+        printf(".");
+        fflush(stdout);
+        for (volatile int j = 0; j < 100000000; j++); // delay
+    }
+    printf(RESET "\n");
+}
+
+// =================== CORE LOGIC =====================
+
+void display_outfits(Outfit outfits[], int size) {
+    for (int i = 0; i < size; i++) {
+        printf(BLUE "%d. %s\n" RESET, i + 1, outfits[i].title);
+        for (int j = 0; j < NUM_ITEMS; j++) {
+            printf("   - %s\n", outfits[i].items[j]);
+        }
+    }
+}
+
+void display_options(char options[][MAX_LEN], int count) {
+    for (int i = 0; i < count; i++) {
+        printf(BLUE "%d. %s\n" RESET, i + 1, options[i]);
+    }
+}
+
+const char* get_category(float temp) {
+    if (temp < 15.0) return "cold";
+    else if (temp <= 25.0) return "moderate";
+    else return "hot";
+}
+
+void get_weather_input(Weather *weather) {
+    printf("Enter your city: ");
+    fgets(weather->city, MAX_LEN, stdin);
+    strip_newline(weather->city);
+
+    printf("Enter temperature (°C): ");
+    scanf("%f", &weather->temp);
+    getchar(); // consume newline
+
+    printf("Enter weather condition (e.g., Rain, Clear): ");
+    fgets(weather->condition, MAX_LEN, stdin);
+    strip_newline(weather->condition);
+}
+
+void recommend_outfit(const Weather *weather) {
+    const char *category = get_category(weather->temp);
+    Outfit *chosen_outfit;
+    char (*acc)[MAX_LEN];
+    char (*shoe)[MAX_LEN];
+
+    if (strstr(weather->condition, "rain") || strstr(weather->condition, "Rain"))
+        printf(RED "\n☔ It's rainy — carry an umbrella or raincoat!\n" RESET);
+
+    // Outfit options
+    printf("\n👕 Choose an outfit style:\n");
+    if (strcmp(category, "cold") == 0) {
+        display_outfits(cold_outfits, NUM_OUTFITS);
+        chosen_outfit = &cold_outfits[get_valid_choice(NUM_OUTFITS) - 1];
+        acc = cold_accessories;
+        shoe = cold_shoes;
+    } else if (strcmp(category, "moderate") == 0) {
+        display_outfits(moderate_outfits, NUM_OUTFITS);
+        chosen_outfit = &moderate_outfits[get_valid_choice(NUM_OUTFITS) - 1];
+        acc = moderate_accessories;
+        shoe = moderate_shoes;
+    } else {
+        display_outfits(hot_outfits, NUM_OUTFITS);
+        chosen_outfit = &hot_outfits[get_valid_choice(NUM_OUTFITS) - 1];
+        acc = hot_accessories;
+        shoe = hot_shoes;
     }
 
-    accessories = {
-        "cold": ["Woolen Scarf", "Gloves", "Beanie", "Fingerless Gloves", "Knitted Hat"],
-        "moderate": ["Leather Belt", "Watch", "Cap", "Simple Chain", "Bracelet", "Sunglasses"],
-        "hot": ["Sunglasses", "Baseball Cap", "Bucket Hat", "Beaded Necklace", "Wristband"]
+    // Accessories
+    printf("\n🎒 Choose an accessory:\n");
+    display_options(acc, NUM_ACCESSORIES);
+    int acc_choice = get_valid_choice(NUM_ACCESSORIES) - 1;
+
+    // Shoes
+    printf("\n👟 Choose a shoe type:\n");
+    display_options(shoe, NUM_SHOES);
+    int shoe_choice = get_valid_choice(NUM_SHOES) - 1;
+
+    // Final recommendation
+    printf(GREEN "\n✅ Final Outfit Recommendation:\n" RESET);
+    printf("Style: %s\n", chosen_outfit->title);
+    for (int i = 0; i < NUM_ITEMS; i++) {
+        printf(" - %s\n", chosen_outfit->items[i]);
     }
+    printf("Accessory: %s\n", acc[acc_choice]);
+    printf("Footwear: %s\n", shoe[shoe_choice]);
+}
 
-    shoes = {
-        "cold": ["Leather Boots", "Snow Boots", "Chelsea Boots"],
-        "moderate": ["Sneakers", "Canvas Shoes", "Loafers"],
-        "hot": ["Sneakers", "Flip-Flops", "Sandals"]
-    }
+// =================== MAIN =====================
 
-    # Determine temperature category
-    if temp < 15:
-        temp_cat = "cold"
-    elif 15 <= temp <= 25:
-        temp_cat = "moderate"
-    else:
-        temp_cat = "hot"
+int main() {
+    Weather current_weather;
 
-    if "rain" in condition.lower():
-        print("\n☔ It's rainy — don't forget an umbrella or raincoat!")
+    print_banner();
+    get_weather_input(&current_weather);
+    simulate_loading("Fetching recommendations");
+    recommend_outfit(&current_weather);
 
-    # Step 1: Choose outfit
-    print("\n👗 Outfit Styles:")
-    for i, outfit in enumerate(outfits[temp_cat], 1):
-        print(f"{i}. {outfit['title']} - Includes: {', '.join(outfit['items'])}")
-
-    while True:
-        outfit_choice = input("Select an outfit style (1-3): ").strip()
-        if outfit_choice in ['1', '2', '3']:
-            outfit_choice = int(outfit_choice) - 1
-            selected_outfit = outfits[temp_cat][outfit_choice]
-            break
-        else:
-            print("Please enter 1, 2, or 3.")
-
-    # Step 2: Choose accessory
-    print("\n🎒 Accessories:")
-    for i, acc in enumerate(accessories[temp_cat], 1):
-        print(f"{i}. {acc}")
-
-    while True:
-        acc_choice = input(f"Select an accessory (1-{len(accessories[temp_cat])}): ").strip()
-        if acc_choice.isdigit() and 1 <= int(acc_choice) <= len(accessories[temp_cat]):
-            acc_choice = int(acc_choice) - 1
-            selected_accessory = accessories[temp_cat][acc_choice]
-            break
-        else:
-            print(f"Please enter a number between 1 and {len(accessories[temp_cat])}.")
-
-    # Step 3: Choose shoes
-    print("\n👟 Shoes:")
-    for i, shoe in enumerate(shoes[temp_cat], 1):
-        print(f"{i}. {shoe}")
-
-    while True:
-        shoe_choice = input(f"Select a shoe (1-{len(shoes[temp_cat])}): ").strip()
-        if shoe_choice.isdigit() and 1 <= int(shoe_choice) <= len(shoes[temp_cat]):
-            shoe_choice = int(shoe_choice) - 1
-            selected_shoe = shoes[temp_cat][shoe_choice]
-            break
-        else:
-            print(f"Please enter a number between 1 and {len(shoes[temp_cat])}.")
-
-    # Final summary
-    print("\n✅ Your final recommended outfit:")
-    print(f"Outfit Style: {selected_outfit['title']}")
-    print("Clothes:")
-    for item in selected_outfit['items']:
-        print(f" - {item}")
-    print(f"Accessory: {selected_accessory}")
-    print(f"Shoes: {selected_shoe}")
-
-# ====== MAIN PROGRAM ======
-api_key = "c44576f39b5066de0f7214c50941cb24" 
-
-city = input("Enter your city: ").strip()
-temperature, condition = get_weather(city, api_key)
-
-if temperature is not None:
-    print(f"\n🌡️ Temperature: {temperature}°C")
-    print(f"☁️ Condition: {condition}")
-    recommend_outfit(temperature, condition)
+    printf(GREEN "\n🎉 Stay stylish and weather-ready!\n\n" RESET);
+    return 0;
+}
