@@ -5,17 +5,11 @@
 // Enhanced version with jacket selection, tips, history, time-based greetings,
 // and more diverse outfits. Total ~600 lines.
 
-
-
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #include <time.h>
-
-
-
 
 
 
@@ -599,12 +593,6 @@ void show_history() {
     
     wait_for_user();
 }
-
-
-
-
-
-
 void print_divider() {
     printf("\n----------------------------------------\n");
 }
