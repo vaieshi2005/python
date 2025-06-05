@@ -111,7 +111,7 @@ Outfit moderate_outfits[NUM_OUTFITS] = {
 Outfit hot_outfits[NUM_OUTFITS] = {
     {"Cool & Comfy", {"Cotton T-Shirt", "Shorts", "Cap"}},
     {"Beach Day", {"Tank Top", "Swim Shorts", "Flip-Flops"}},
-    {"Summer Breeze", {"Tank Top", "Jean Pants", "Hat","Slippers"}}
+    {"Summer Breeze", {"Sleeveless Top", "Linen Pants", "Sun Hat"}}
 };
 
 
@@ -121,7 +121,7 @@ Outfit hot_outfits[NUM_OUTFITS] = {
 
 // Accessory suggestions
 char cold_accessories[NUM_ACCESSORIES][MAX_LEN] = {
-    "Woolen Scarf", "Gloves", "Beanie", "Knitted Hat", "Earmuffs", "Gloves"
+    "Woolen Scarf", "Gloves", "Beanie", "Knitted Hat", "Earmuffs"
 };
 
 char moderate_accessories[NUM_ACCESSORIES][MAX_LEN] = {
@@ -129,7 +129,7 @@ char moderate_accessories[NUM_ACCESSORIES][MAX_LEN] = {
 };
 
 char hot_accessories[NUM_ACCESSORIES][MAX_LEN] = {
-    "Baseball Cap", "Bandana", "Wristband", "Cooling Towel", "Bucket Hat", "Baseball Cap
+    "Baseball Cap", "Bandana", "Wristband", "Cooling Towel", "Bucket Hat"
 };
 
 
