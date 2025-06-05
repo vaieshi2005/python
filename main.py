@@ -342,6 +342,10 @@ void farewell() {
 // MAIN FUNCTION
 // =============================
 
+
+
+
+
 int main() {
     while (1) {
         Weather current_weather;
