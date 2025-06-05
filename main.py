@@ -40,8 +40,10 @@
 #define NUM_SHOES 5
 #define MAX_CITIES 5
 
+// Add temperature validation constants
+#define MIN_TEMP -50.0
+#define MAX_TEMP 50.0
 
-    
 // ANSI color codes for colorful terminal output
 #define GREEN   "\033[1;32m"
 #define BLUE    "\033[1;34m"
@@ -152,6 +154,15 @@ char hot_shoes[NUM_SHOES][MAX_LEN] = {
 
 
 
+// Add after the global arrays section
+// Last used weather data
+Weather last_weather = {"", 0.0, ""};
+int has_last_weather = 0;
+
+
+
+
+
 // =============================
 // FUNCTION DECLARATIONS
 // =============================
@@ -249,16 +260,51 @@ const char* get_category(float temp) {
 // Take user input for weather details
 void get_weather_input(Weather *weather) {
     printf("Enter your city: ");
-    fgets(weather->city, MAX_LEN, stdin);
+    if (has_last_weather) {
+        printf("(Last used: %s) ", last_weather.city);
+    }
+    if (fgets(weather->city, MAX_LEN, stdin) == NULL) {
+        printf(RED "Error reading city name.\n" RESET);
+        exit(1);
+    }
     strip_newline(weather->city);
+    
+    // If user just pressed enter, use last city
+    if (strlen(weather->city) == 0 && has_last_weather) {
+        strcpy(weather->city, last_weather.city);
+        printf("Using last city: %s\n", weather->city);
+    }
 
-    printf("Enter temperature (°C): ");
-    scanf("%f", &weather->temp);
-    getchar();
+    // Improved temperature input with validation
+    while (1) {
+        printf("Enter temperature (°C): ");
+        if (has_last_weather) {
+            printf("(Last used: %.1f) ", last_weather.temp);
+        }
+        if (scanf("%f", &weather->temp) == 1) {
+            if (weather->temp >= MIN_TEMP && weather->temp <= MAX_TEMP) {
+                break;
+            }
+            printf(RED "Temperature must be between %.1f and %.1f °C.\n" RESET, MIN_TEMP, MAX_TEMP);
+        } else {
+            printf(RED "Invalid temperature input. Please enter a number.\n" RESET);
+            while (getchar() != '\n'); // Clear input buffer
+        }
+    }
+    getchar(); // Clear newline
 
     printf("Enter weather condition (e.g., Rain, Clear): ");
-    fgets(weather->condition, MAX_LEN, stdin);
+    if (fgets(weather->condition, MAX_LEN, stdin) == NULL) {
+        printf(RED "Error reading weather condition.\n" RESET);
+        exit(1);
+    }
     strip_newline(weather->condition);
+
+    // Save current weather as last used
+    strcpy(last_weather.city, weather->city);
+    last_weather.temp = weather->temp;
+    strcpy(last_weather.condition, weather->condition);
+    has_last_weather = 1;
 }
 
 
@@ -273,7 +319,14 @@ void recommend_outfit(const Weather *weather) {
     char (*acc)[MAX_LEN];
     char (*shoe)[MAX_LEN];
 
-    if (strstr(weather->condition, "rain") || strstr(weather->condition, "Rain")) {
+    // Case-insensitive weather condition check
+    char condition_lower[MAX_LEN];
+    strcpy(condition_lower, weather->condition);
+    for (int i = 0; condition_lower[i]; i++) {
+        condition_lower[i] = tolower(condition_lower[i]);
+    }
+
+    if (strstr(condition_lower, "rain")) {
         printf(RED "\n☔ It's rainy — carry an umbrella or raincoat!\n" RESET);
     }
 
