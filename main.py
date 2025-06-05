@@ -12,22 +12,15 @@
 
 
     #include <stdio.h>
-
     #include <stdlib.h>
-
     #include <string.h>
-
     #include <ctype.h>
-
     #include <time.h>
-
 
     
     
     // =============================
-
    // CONSTANTS AND DEFINITIONS
-   
     // =============================
 
     
@@ -40,7 +33,7 @@
 #define NUM_SHOES 5
 #define MAX_CITIES 5
 
-// Add temperature validation constants
+// Temperature validation constants
 #define MIN_TEMP -50.0
 #define MAX_TEMP 50.0
 
@@ -50,6 +43,7 @@
 #define CYAN    "\033[1;36m"
 #define RED     "\033[1;31m"
 #define YELLOW  "\033[1;33m"
+#define MAGENTA "\033[1;35m"
 #define RESET   "\033[0m"
 
                    
@@ -67,20 +61,12 @@ typedef struct {
     char items[NUM_ITEMS][MAX_LEN];
 } Outfit;
 
-
-
-
-
 // Weather structure to hold city name, temperature, and condition
 typedef struct {
     char city[MAX_LEN];
     float temp;
     char condition[MAX_LEN];
 } Weather;
-
-
-
-
 
 // =============================
 // GLOBAL DATA ARRAYS
@@ -89,87 +75,57 @@ typedef struct {
 // Outfit options for cold weather
 Outfit cold_outfits[NUM_OUTFITS] = {
     {"Winter Warrior", {"Trench Coat", "Corduroy Pants", "Turtleneck"}},
-    {"Frosty Fashion", {"Puffer Jacket", "Thermal Leggings", "Wool Shirt"}},
-    {"Cozy Layers", {"Wool Coat", "Blue Jeans", "Sweater"}}
+    {"Arctic Explorer", {"Puffer Jacket", "Thermal Leggings", "Wool Sweater"}},
+    {"Cozy Professional", {"Wool Coat", "Dark Jeans", "Cashmere Sweater"}}
 };
-
-
-
-
 
 // Outfit options for moderate weather
 Outfit moderate_outfits[NUM_OUTFITS] = {
-    {"Smart Casual", {"Long Sleeve Shirt", "Chinos", "Light Sweater"}},
-    {"Relaxed Style", {"Henley Shirt", "Khaki Pants", "Light Hoodie"}},
-    {"Urban Mix", {"Bomber Jacket", "Joggers", "Graphic Tee"}}
+    {"Smart Casual", {"Long Sleeve Shirt", "Chinos", "Light Cardigan"}},
+    {"Weekend Relaxed", {"Henley Shirt", "Khaki Pants", "Zip-up Hoodie"}},
+    {"Urban Explorer", {"Denim Jacket", "Joggers", "Graphic Tee"}}
 };
-
-
-
-
 
 // Outfit options for hot weather
 Outfit hot_outfits[NUM_OUTFITS] = {
-    {"Cool & Comfy", {"Cotton T-Shirt", "Shorts", "Cap"}},
-    {"Beach Day", {"Tank Top", "Swim Shorts", "Flip-Flops"}},
-    {"Summer Breeze", {"Sleeveless Top", "Linen Pants", "Sun Hat"}}
+    {"Summer Cool", {"Linen Shirt", "Cotton Shorts", "Baseball Cap"}},
+    {"Beach Ready", {"Tank Top", "Board Shorts", "Sun Hat"}},
+    {"City Heat", {"Breathable Tee", "Linen Pants", "Cooling Towel"}}
 };
-
-
-
-
-
 
 // Accessory suggestions
 char cold_accessories[NUM_ACCESSORIES][MAX_LEN] = {
-    "Woolen Scarf", "Gloves", "Beanie", "Knitted Hat", "Earmuffs"
+    "Wool Scarf", "Insulated Gloves", "Warm Beanie", "Fleece Headband", "Thermal Socks"
 };
 
 char moderate_accessories[NUM_ACCESSORIES][MAX_LEN] = {
-    "Cap", "Watch", "Leather Belt", "Sunglasses", "Snapback Hat"
+    "Baseball Cap", "Stylish Watch", "Leather Belt", "Sunglasses", "Light Scarf"
 };
 
 char hot_accessories[NUM_ACCESSORIES][MAX_LEN] = {
-    "Baseball Cap", "Bandana", "Wristband", "Cooling Towel", "Bucket Hat"
+    "Wide-Brim Hat", "Cooling Bandana", "UV Wristband", "Portable Fan", "Sweat Towel"
 };
-
-
-
-
 
 // Shoe suggestions
 char cold_shoes[NUM_SHOES][MAX_LEN] = {
-    "Snow Boots", "Leather Boots", "Chelsea Boots", "Insulated Sneakers", "High Tops"
+    "Waterproof Boots", "Insulated Sneakers", "Warm Chelsea Boots", "Snow Boots", "Thermal Loafers"
 };
 
 char moderate_shoes[NUM_SHOES][MAX_LEN] = {
-    "Sneakers", "Canvas Shoes", "Loafers", "Desert Boots", "Walking Shoes"
+    "Comfortable Sneakers", "Canvas Shoes", "Casual Loafers", "Walking Boots", "Slip-on Shoes"
 };
 
 char hot_shoes[NUM_SHOES][MAX_LEN] = {
-    "Flip-Flops", "Sandals", "Crocs", "Sliders", "Light Sneakers"
+    "Breathable Sandals", "Flip-Flops", "Mesh Sneakers", "Water Shoes", "Ventilated Slip-ons"
 };
 
-
-
-
-
-// Add after the global arrays section
-// Last used weather data
+// Weather memory
 Weather last_weather = {"", 0.0, ""};
 int has_last_weather = 0;
-
-
-
-
 
 // =============================
 // FUNCTION DECLARATIONS
 // =============================
-
-    
-    
-    
     
 void print_banner();
 void strip_newline(char *str);
@@ -184,27 +140,25 @@ void wait_for_user();
 void print_divider();
 void repeat_menu();
 void farewell();
-
-
-
+void display_weather_info(const Weather *weather);
 
 // =============================
 // UTILITY FUNCTIONS
 // =============================
 
-
-    // Print program banner with formatting
+// Print program banner with formatting
 void print_banner() {
     printf(GREEN);
     printf("\n==========================================\n");
-    printf("    Weather-Based Outfit Recommender    \n");
+    printf("   🌤️  Weather-Based Outfit Recommender  👕\n");
     printf("==========================================\n" RESET);
+    printf(CYAN "Your personal AI stylist for any weather!\n" RESET);
 }
 
 // Remove newline character from string
 void strip_newline(char *str) {
     size_t len = strlen(str);
-    if (len && str[len - 1] == '\n') str[len - 1] = '\0';
+    if (len > 0 && str[len - 1] == '\n') str[len - 1] = '\0';
 }
 
 // Get a valid user menu choice within range
@@ -216,7 +170,7 @@ int get_valid_choice(int max) {
             while (getchar() != '\n');
             return choice;
         } else {
-            printf(RED "Invalid input. Try again.\n" RESET);
+            printf(RED "❌ Invalid input. Please enter a number between 1 and %d.\n" RESET, max);
             while (getchar() != '\n');
         }
     }
@@ -224,13 +178,13 @@ int get_valid_choice(int max) {
 
 // Simulate loading animation with message
 void simulate_loading(const char *msg) {
-    printf(CYAN "%s", msg);
-    for (int i = 0; i < 3; i++) {
+    printf(CYAN "🔄 %s", msg);
+    for (int i = 0; i < 4; i++) {
         printf(".");
         fflush(stdout);
-        for (volatile long j = 0; j < 50000000; j++);
+        for (volatile long j = 0; j < 40000000; j++);
     }
-    printf(RESET "\n");
+    printf(" Done!" RESET "\n");
 }
 
 // Display outfit titles and their items
@@ -238,8 +192,9 @@ void display_outfits(Outfit outfits[], int size) {
     for (int i = 0; i < size; i++) {
         printf(BLUE "%d. %s\n" RESET, i + 1, outfits[i].title);
         for (int j = 0; j < NUM_ITEMS; j++) {
-            printf("   - %s\n", outfits[i].items[j]);
+            printf("   • %s\n", outfits[i].items[j]);
         }
+        printf("\n");
     }
 }
 
@@ -252,17 +207,34 @@ void display_options(char options[][MAX_LEN], int count) {
 
 // Determine weather category based on temperature
 const char* get_category(float temp) {
-    if (temp < 15.0) return "cold";
+    if (temp < 10.0) return "cold";
     else if (temp <= 25.0) return "moderate";
     else return "hot";
 }
 
+// Display current weather information
+void display_weather_info(const Weather *weather) {
+    printf(MAGENTA "\n🌡️  Weather Summary for %s:\n" RESET, weather->city);
+    printf("Temperature: %.1f°C\n", weather->temp);
+    printf("Condition: %s\n", weather->condition);
+    
+    const char *category = get_category(weather->temp);
+    if (strcmp(category, "cold") == 0) {
+        printf("Category: ❄️  Cold Weather\n");
+    } else if (strcmp(category, "moderate") == 0) {
+        printf("Category: 🌤️  Moderate Weather\n");
+    } else {
+        printf("Category: ☀️  Hot Weather\n");
+    }
+}
+
 // Take user input for weather details
 void get_weather_input(Weather *weather) {
-    printf("Enter your city: ");
+    printf("\n📍 Enter your city: ");
     if (has_last_weather) {
-        printf("(Last used: %s) ", last_weather.city);
+        printf("(or press Enter for '%s') ", last_weather.city);
     }
+    
     if (fgets(weather->city, MAX_LEN, stdin) == NULL) {
         printf(RED "Error reading city name.\n" RESET);
         exit(1);
@@ -272,28 +244,39 @@ void get_weather_input(Weather *weather) {
     // If user just pressed enter, use last city
     if (strlen(weather->city) == 0 && has_last_weather) {
         strcpy(weather->city, last_weather.city);
-        printf("Using last city: %s\n", weather->city);
+        printf("✅ Using previous city: %s\n", weather->city);
     }
 
-    // Improved temperature input with validation
+    // Temperature input with validation
     while (1) {
-        printf("Enter temperature (°C): ");
-        if (has_last_weather) {
-            printf("(Last used: %.1f) ", last_weather.temp);
+        printf("🌡️  Enter temperature (°C): ");
+        if (has_last_weather && strlen(weather->city) > 0) {
+            printf("(or press Enter for %.1f°C) ", last_weather.temp);
         }
-        if (scanf("%f", &weather->temp) == 1) {
-            if (weather->temp >= MIN_TEMP && weather->temp <= MAX_TEMP) {
+        
+        char temp_input[20];
+        if (fgets(temp_input, sizeof(temp_input), stdin) != NULL) {
+            strip_newline(temp_input);
+            
+            // Check if user wants to use last temperature
+            if (strlen(temp_input) == 0 && has_last_weather) {
+                weather->temp = last_weather.temp;
+                printf("✅ Using previous temperature: %.1f°C\n", weather->temp);
                 break;
             }
-            printf(RED "Temperature must be between %.1f and %.1f °C.\n" RESET, MIN_TEMP, MAX_TEMP);
-        } else {
-            printf(RED "Invalid temperature input. Please enter a number.\n" RESET);
-            while (getchar() != '\n'); // Clear input buffer
+            
+            if (sscanf(temp_input, "%f", &weather->temp) == 1) {
+                if (weather->temp >= MIN_TEMP && weather->temp <= MAX_TEMP) {
+                    break;
+                }
+                printf(RED "❌ Temperature must be between %.1f and %.1f°C.\n" RESET, MIN_TEMP, MAX_TEMP);
+            } else {
+                printf(RED "❌ Please enter a valid number.\n" RESET);
+            }
         }
     }
-    getchar(); // Clear newline
 
-    printf("Enter weather condition (e.g., Rain, Clear): ");
+    printf("🌦️  Enter weather condition (e.g., Sunny, Rainy, Cloudy): ");
     if (fgets(weather->condition, MAX_LEN, stdin) == NULL) {
         printf(RED "Error reading weather condition.\n" RESET);
         exit(1);
@@ -307,13 +290,10 @@ void get_weather_input(Weather *weather) {
     has_last_weather = 1;
 }
 
-
-
-
-
-
 // Recommend outfit based on weather input
 void recommend_outfit(const Weather *weather) {
+    display_weather_info(weather);
+    
     const char *category = get_category(weather->temp);
     Outfit *chosen_outfit;
     char (*acc)[MAX_LEN];
@@ -326,11 +306,16 @@ void recommend_outfit(const Weather *weather) {
         condition_lower[i] = tolower(condition_lower[i]);
     }
 
-    if (strstr(condition_lower, "rain")) {
-        printf(RED "\n☔ It's rainy — carry an umbrella or raincoat!\n" RESET);
+    // Weather-specific advice
+    if (strstr(condition_lower, "rain") || strstr(condition_lower, "drizzle")) {
+        printf(BLUE "\n☔ Rain detected! Don't forget an umbrella or waterproof jacket!\n" RESET);
+    } else if (strstr(condition_lower, "snow")) {
+        printf(CYAN "\n❄️ Snowy conditions! Extra layers and waterproof footwear recommended!\n" RESET);
+    } else if (strstr(condition_lower, "wind")) {
+        printf(YELLOW "\n💨 Windy weather! Consider a windbreaker or secure accessories!\n" RESET);
     }
 
-    printf("\n👕 Choose an outfit style:\n");
+    printf("\n👔 Choose your outfit style:\n");
     if (strcmp(category, "cold") == 0) {
         display_outfits(cold_outfits, NUM_OUTFITS);
         chosen_outfit = &cold_outfits[get_valid_choice(NUM_OUTFITS) - 1];
@@ -348,27 +333,27 @@ void recommend_outfit(const Weather *weather) {
         shoe = hot_shoes;
     }
 
-    printf("\n🎒 Choose an accessory:\n");
+    printf("\n🎒 Choose your accessory:\n");
     display_options(acc, NUM_ACCESSORIES);
     int acc_choice = get_valid_choice(NUM_ACCESSORIES) - 1;
 
-    printf("\n👟 Choose a shoe type:\n");
+    printf("\n👟 Choose your footwear:\n");
     display_options(shoe, NUM_SHOES);
     int shoe_choice = get_valid_choice(NUM_SHOES) - 1;
 
     // Final outfit display
-    printf(GREEN "\n✅ Final Outfit Recommendation:\n" RESET);
-    printf("Style: %s\n", chosen_outfit->title);
+    printf(GREEN "\n✨ Your Perfect Outfit Recommendation:\n" RESET);
+    printf("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
+    printf(BLUE "Style: %s\n" RESET, chosen_outfit->title);
+    printf("Clothing:\n");
     for (int i = 0; i < NUM_ITEMS; i++) {
-        printf(" - %s\n", chosen_outfit->items[i]);
+        printf("  • %s\n", chosen_outfit->items[i]);
     }
     printf("Accessory: %s\n", acc[acc_choice]);
     printf("Footwear: %s\n", shoe[shoe_choice]);
+    printf("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
+    printf(GREEN "Have a stylish day! 😎\n" RESET);
 }
-
-
-
-
 
 // Prompt for user to continue
 void wait_for_user() {
@@ -378,39 +363,38 @@ void wait_for_user() {
 
 // Print a divider between sections
 void print_divider() {
-    printf("\n-------------------------------------------\n");
+    printf("\n" CYAN "═══════════════════════════════════════════\n" RESET);
 }
 
 // Ask user whether to repeat
 void repeat_menu() {
-    printf("\nWould you like to try another city?\n1. Yes\n2. No\n");
+    printf(YELLOW "\nWould you like to get another outfit recommendation?\n" RESET);
+    printf("1. Yes, try another city/weather\n");
+    printf("2. No, exit program\n");
 }
 
 // Print exit message
 void farewell() {
-    printf(GREEN "\nThank you for using the Weather-Based Outfit Recommender! Stay stylish!\n" RESET);
+    printf(GREEN "\n🎉 Thank you for using the Weather-Based Outfit Recommender!\n");
+    printf("Stay stylish and weather-ready! ✨👗👔\n" RESET);
 }
 
 // =============================
 // MAIN FUNCTION
 // =============================
 
-
-
-
-
 int main() {
     while (1) {
         Weather current_weather;
-        print_banner();               // Display welcome banner
-        get_weather_input(&current_weather);  // Get weather input from user
-        simulate_loading("\nFetching recommendations"); // Simulate delay
-        recommend_outfit(&current_weather);    // Suggest outfit
-        print_divider();             // Print divider
-        repeat_menu();              // Ask for retry
-        int choice = get_valid_choice(2);     // Get choice
-        if (choice == 2) break;               // Exit if user chooses no
+        print_banner();
+        get_weather_input(&current_weather);
+        simulate_loading("Analyzing weather and finding perfect outfits");
+        recommend_outfit(&current_weather);
+        print_divider();
+        repeat_menu();
+        int choice = get_valid_choice(2);
+        if (choice == 2) break;
     }
-    farewell(); // Goodbye message
+    farewell();
     return 0;
 }
