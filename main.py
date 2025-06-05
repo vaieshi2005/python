@@ -1,15 +1,26 @@
 #include <stdio.h>
+
 #include <stdlib.h>
+
 #include <string.h>
+
 #include <ctype.h>
 
+
+
 // =================== GLOBALS =====================
+
+
 
 #define MAX_LEN 100
 #define NUM_OUTFITS 3
 #define NUM_ITEMS 3
 #define NUM_ACCESSORIES 5
 #define NUM_SHOES 5
+
+
+
+
 
 // ANSI color codes
 #define GREEN   "\033[1;32m"
@@ -29,6 +40,10 @@ typedef struct {
     float temp;
     char condition[MAX_LEN];
 } Weather;
+
+
+
+
 
 // =================== OUTFITS =====================
 
@@ -50,6 +65,10 @@ Outfit hot_outfits[NUM_OUTFITS] = {
     {"Summer Breeze", {"Sleeveless Top", "Linen Pants", "Sun Hat"}}
 };
 
+
+
+
+
 // Accessories
 char cold_accessories[NUM_ACCESSORIES][MAX_LEN] = {
     "Woolen Scarf", "Gloves", "Beanie", "Knitted Hat", "Earmuffs"
@@ -60,6 +79,10 @@ char moderate_accessories[NUM_ACCESSORIES][MAX_LEN] = {
 char hot_accessories[NUM_ACCESSORIES][MAX_LEN] = {
     "Baseball Cap", "Bandana", "Wristband", "Cooling Towel", "Bucket Hat"
 };
+
+
+
+
 
 // Shoes
 char cold_shoes[NUM_SHOES][MAX_LEN] = {
@@ -72,7 +95,13 @@ char hot_shoes[NUM_SHOES][MAX_LEN] = {
     "Flip-Flops", "Sandals", "Crocs", "Sliders", "Light Sneakers"
 };
 
+
+
+
 // =================== UTILITIES =====================
+
+
+
 
 void print_banner() {
     printf(GREEN "\n===============================\n");
@@ -108,6 +137,11 @@ void simulate_loading(const char *msg) {
     }
     printf(RESET "\n");
 }
+
+
+
+
+
 
 // =================== CORE LOGIC =====================
 
@@ -193,6 +227,10 @@ void recommend_outfit(const Weather *weather) {
     printf("Accessory: %s\n", acc[acc_choice]);
     printf("Footwear: %s\n", shoe[shoe_choice]);
 }
+
+
+
+
 
 // =================== MAIN =====================
 
