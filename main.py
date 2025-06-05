@@ -154,6 +154,15 @@ char hot_shoes[NUM_SHOES][MAX_LEN] = {
 
 
 
+// Add after the global arrays section
+// Last used weather data
+Weather last_weather = {"", 0.0, ""};
+int has_last_weather = 0;
+
+
+
+
+
 // =============================
 // FUNCTION DECLARATIONS
 // =============================
@@ -251,15 +260,27 @@ const char* get_category(float temp) {
 // Take user input for weather details
 void get_weather_input(Weather *weather) {
     printf("Enter your city: ");
+    if (has_last_weather) {
+        printf("(Last used: %s) ", last_weather.city);
+    }
     if (fgets(weather->city, MAX_LEN, stdin) == NULL) {
         printf(RED "Error reading city name.\n" RESET);
         exit(1);
     }
     strip_newline(weather->city);
+    
+    // If user just pressed enter, use last city
+    if (strlen(weather->city) == 0 && has_last_weather) {
+        strcpy(weather->city, last_weather.city);
+        printf("Using last city: %s\n", weather->city);
+    }
 
     // Improved temperature input with validation
     while (1) {
         printf("Enter temperature (°C): ");
+        if (has_last_weather) {
+            printf("(Last used: %.1f) ", last_weather.temp);
+        }
         if (scanf("%f", &weather->temp) == 1) {
             if (weather->temp >= MIN_TEMP && weather->temp <= MAX_TEMP) {
                 break;
@@ -278,6 +299,12 @@ void get_weather_input(Weather *weather) {
         exit(1);
     }
     strip_newline(weather->condition);
+
+    // Save current weather as last used
+    strcpy(last_weather.city, weather->city);
+    last_weather.temp = weather->temp;
+    strcpy(last_weather.condition, weather->condition);
+    has_last_weather = 1;
 }
 
 
