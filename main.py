@@ -119,6 +119,19 @@ char hot_shoes[NUM_SHOES][MAX_LEN] = {
     "Breathable Sandals", "Flip-Flops", "Mesh Sneakers", "Water Shoes", "Ventilated Slip-ons"
 };
 
+// jackets suggestions
+char cold_jackets[NUM_JACKETS][MAX_LEN] = {
+    "Waterproof Jackets", "Insulated Jackets", "Warm Chelsea Jackets", "Snow Jackets", "Thermal Jackets"
+};
+
+char moderate_jackets[NUM_JACKETS][MAX_LEN] = {
+    "Comfortable Jackets", "Leather Jackets", "Casual Jackets", "Thin Jackets", "Sweaters"
+};
+
+char hot_jackets[NUM_JACKETS][MAX_LEN] = {
+    "Wollen Jackets", "Hoodies", "Mesh Jackets", "Water Jackets", "Ventilated Jackets"
+};
+
 // Weather memory
 Weather last_weather = {"", 0.0, ""};
 int has_last_weather = 0;
